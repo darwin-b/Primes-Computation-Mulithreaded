@@ -14,13 +14,13 @@ namespace Primes_Computation_Mulithreaded
     {
 
         List<ListViewItem> listResults = new List<ListViewItem>();
-
+        HashSet<int> hashSetPrimes = new HashSet<int>();
         public Form1()
         {
             InitializeComponent();
             backgroundWorker1.WorkerReportsProgress = true;
             backgroundWorker1.WorkerSupportsCancellation = true;
-            lstViewResults.Items.Add(primes_compute(10));
+            //lstViewResults.Items.Add(primes_compute(2310));
         }
 
         private void btnCompute_Click(object sender, EventArgs e)
@@ -43,6 +43,8 @@ namespace Primes_Computation_Mulithreaded
                 backgroundWorker1.RunWorkerAsync(1000);
             }
 
+            hashSetPrimes = primes(10000);
+            
         }
 
 
@@ -55,7 +57,11 @@ namespace Primes_Computation_Mulithreaded
 
         private void backgroundWorker1_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
-            if (e.Cancelled) lblProgress.Text = "Operation was canceled";
+            if (e.Cancelled)
+            {
+                lblProgress.Text = "Operation was canceled";
+                btnCompute_Click(sender, e);
+            }
             else if (e.Error != null) lblProgress.Text = "Error: " + e.Error.Message;
             else
             {
@@ -70,31 +76,53 @@ namespace Primes_Computation_Mulithreaded
 
         private void backgroundWorker1_ProgressChanged(object sender, ProgressChangedEventArgs e)
         {
+            //if(typeof(e)=typeof(ListViewItem))
+            //{
+
+            //}
             lblProgress.Text = (e.ProgressPercentage.ToString() + "%");
             progressBar1.Value = int.Parse(e.ProgressPercentage.ToString());
         }
 
 
-        private ListViewItem primes_compute(int num)
+        private ListViewItem primes_compute(int num, HashSet<int> primesSet)
         {
-            //lstViewResults.Items.Add(num.ToString());
-            ListViewItem number = new ListViewItem(num.ToString());
+
+            ListViewItem listFactors = new ListViewItem(num.ToString());
             int bound = (int) Math.Sqrt(num);
             string factors="";
-            for(int i=2; i<= num;i++)
+            foreach(var prime in primesSet)
             {
-                if(num%i==0) factors += i.ToString()+" ";
-
-                while (num%i==0)
-                {
-                    num = num / i;
-                }
+                if(num%prime==0) factors += prime.ToString()+" ";
             }
 
-            number.SubItems.Add(factors);
+            listFactors.SubItems.Add(factors);
             //lstViewResults.Items.Add(number);
-            return number;
+            return listFactors;
         }
+
+        private HashSet<int> primes(int upperBound)
+        {
+            HashSet<int> primes = new HashSet<int>();
+            int bound1 = (int) Math.Ceiling(Math.Sqrt(upperBound));
+            for (int i=2;i<=bound1;i++)
+            {
+                bool flagP = true;
+                int bound2 = (int)Math.Ceiling(Math.Sqrt(upperBound));
+                for (int j=2;j<=bound2;j++)
+                {
+                    if(i%j==0 && i!=j)
+                    {
+                        flagP = false;
+                        break;
+                    }
+                }
+                if(flagP)                 
+                    primes.Add(i);
+            }
+            return primes;
+        }
+
 
         private void bgWorkerDoWork_Compute(object sender, DoWorkEventArgs e)
         {
@@ -103,6 +131,7 @@ namespace Primes_Computation_Mulithreaded
             int uBound = int.Parse(msktxtUpperBound.Text);
             //listResults = new List<ListViewItem>();
             Console.WriteLine(lBound+ uBound);
+            hashSetPrimes = primes(uBound);
             for(int i = lBound; i <= uBound; i++)
             {
                 if(worker.CancellationPending== true)
@@ -113,12 +142,29 @@ namespace Primes_Computation_Mulithreaded
                 else
                 {
                     //System.Threading.Thread.Sleep(500);
-                    listResults.Add(primes_compute(i));
+
+                    listResults.Add(primes_compute(i, hashSetPrimes));
 
                     //lblProgress.Text = ((i - lBound) * 100 / (uBound - lBound)).ToString();
                     worker.ReportProgress((i-lBound) * 100/(uBound-lBound));
+                    
                 }
             }
+        }
+
+        private void backgroundWorker2_DoWork(object sender, DoWorkEventArgs e)
+        {
+
+        }
+
+        private void backgroundWorker2_ProgressChanged(object sender, ProgressChangedEventArgs e)
+        {
+
+        }
+
+        private void backgroundWorker2_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+
         }
     }
 }
