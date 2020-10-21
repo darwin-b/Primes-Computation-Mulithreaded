@@ -10,7 +10,7 @@
 *   - Compute and display the numbers in the range of lower & upper bounds, along with their unique prime factors.  
 *   
 *	
-* Written by Nikhil Darwin Bollepalli, starting October 14, 2020.
+*Written by Nikhil Darwin Bollepalli, starting October 14, 2020.
 ******************************************************************************/
 using System;
 using System.Collections.Generic;
@@ -43,15 +43,17 @@ namespace Primes_Computation_Mulithreaded
 
         private void btnCompute_Click(object sender, EventArgs e)
         {
+
             if (backgroundWorker1.IsBusy && backgroundWorker1.WorkerSupportsCancellation == true)
             {
                 lblMsg.Text = "BGWorker busy and cancelling";
                 lstViewResults.Items.Clear();
+                lblMsg.Visible = false;
                 backgroundWorker1.CancelAsync();
                 lblFactorsProgress.Visible = true;
                 lblProgress.Visible = true;
-                lblProgress.Text = "Computation1";
-                lblFactorsProgress.Text = "Computation2";
+                lblProgress.Text = "Primes List Progress";
+                lblFactorsProgress.Text = "Factorisation Progress";
                 lblMsg.ForeColor = colorBlack;
                 progressBar1.Value = 0;
                 progressBar2.Value = 0;
@@ -61,14 +63,16 @@ namespace Primes_Computation_Mulithreaded
             {
                 lblMsg.Text = "BGWorker not busy - starting worker";
                 lstViewResults.Items.Clear();
+                
                 try
                 {
                     int lBound = int.Parse(msktxtLowerBound.Text.Replace(" ", ""));
                     int uBound = int.Parse(msktxtUpperBound.Text.Replace(" ", ""));
                     lblFactorsProgress.Visible = true;
                     lblProgress.Visible = true;
-                    lblProgress.Text = "Computation1";
-                    lblFactorsProgress.Text = "Computation2";
+                    lblMsg.Visible = true;
+                    lblProgress.Text = "Primes List Progress";
+                    lblFactorsProgress.Text = "Factorisation Progress";
                     lblMsg.Text = "";
                     lblMsg.ForeColor = colorBlack;
                     progressBar1.Value = 0;
@@ -84,7 +88,7 @@ namespace Primes_Computation_Mulithreaded
                     lblMsg.ForeColor = colorRed;
                 }
                    
-
+                
 
                 
             }
@@ -147,14 +151,14 @@ namespace Primes_Computation_Mulithreaded
             {
                 lblMsg.Text = "Factorising Number : " + lstItemsFactors.SubItems[0].Text;
                 lstViewResults.Items.Add(lstItemsFactors);
-                lblFactorsProgress.Text = ("Computation 2 : " + e.ProgressPercentage.ToString() + "%");
+                lblFactorsProgress.Text = ("Factorisation : " + e.ProgressPercentage.ToString() + "%");
                 Console.WriteLine("Progress : " + lblProgress.Text + "%");
                 progressBar2.Value = int.Parse(e.ProgressPercentage.ToString());
             }
             else
             {
                 lblMsg.Text = e.UserState.ToString();
-                lblProgress.Text = ("Computation 1: " + e.ProgressPercentage.ToString() + "%");
+                lblProgress.Text = ("Primes list: " + e.ProgressPercentage.ToString() + "%");
                 Console.WriteLine("Progress : " + lblProgress.Text + "%");
                 progressBar1.Value = int.Parse(e.ProgressPercentage.ToString());
             }
@@ -225,6 +229,7 @@ namespace Primes_Computation_Mulithreaded
 
 
             }
+            worker.ReportProgress(100, "Computation1: Primes up to square root of upperbound!");
             return primes;
         }
 
@@ -251,7 +256,8 @@ namespace Primes_Computation_Mulithreaded
                 //sleep thread to allow time to update prograss bar1 completely
                 System.Threading.Thread.Sleep(1000);
                 //lblProgress.Text = "Computation1 Finished";
-
+                if (lBound == 0)
+                    lBound++;
                 for (int i = lBound; i <= uBound; i++)
                 {
                     if (worker.CancellationPending == true)
@@ -261,10 +267,12 @@ namespace Primes_Computation_Mulithreaded
                     }
                     else if(lBound!=uBound)
                     {
+
                         System.Threading.Thread.Sleep(1);
                         //listResults.Add(primes_compute(i, hashSetPrimes));
                         ListViewItem factors = primes_compute(i, hashSetPrimes);
-                        worker.ReportProgress((i - lBound) * 100 / (uBound - lBound), factors);
+                        //if(factors!=null)
+                            worker.ReportProgress((i - lBound) * 100 / (uBound - lBound), factors);
                     }
                     else
                     {
@@ -281,7 +289,6 @@ namespace Primes_Computation_Mulithreaded
             {
                 throw new Exception("Lowerbound value greater than Upperbound.");
             }
-
 
         }
 

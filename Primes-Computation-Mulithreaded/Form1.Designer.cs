@@ -69,9 +69,9 @@
             this.lblProgress.AutoSize = true;
             this.lblProgress.Location = new System.Drawing.Point(33, 343);
             this.lblProgress.Name = "lblProgress";
-            this.lblProgress.Size = new System.Drawing.Size(48, 13);
+            this.lblProgress.Size = new System.Drawing.Size(101, 13);
             this.lblProgress.TabIndex = 14;
-            this.lblProgress.Text = "Progress";
+            this.lblProgress.Text = "Primes List Progress";
             // 
             // progressBar2
             // 
@@ -85,9 +85,9 @@
             this.lblFactorsProgress.AutoSize = true;
             this.lblFactorsProgress.Location = new System.Drawing.Point(33, 425);
             this.lblFactorsProgress.Name = "lblFactorsProgress";
-            this.lblFactorsProgress.Size = new System.Drawing.Size(86, 13);
+            this.lblFactorsProgress.Size = new System.Drawing.Size(111, 13);
             this.lblFactorsProgress.TabIndex = 12;
-            this.lblFactorsProgress.Text = "Factors Progress";
+            this.lblFactorsProgress.Text = "Factorisation Progress";
             // 
             // progressBar1
             // 
@@ -104,6 +104,7 @@
             this.lblMsg.Size = new System.Drawing.Size(37, 13);
             this.lblMsg.TabIndex = 8;
             this.lblMsg.Text = "Status";
+            this.lblMsg.Visible = false;
             // 
             // lstViewResults
             // 
